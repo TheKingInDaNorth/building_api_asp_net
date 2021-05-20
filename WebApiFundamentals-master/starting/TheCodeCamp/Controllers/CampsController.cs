@@ -47,6 +47,34 @@ namespace TheCodeCamp.Controllers
                 if (result == null) return NotFound();
                 return Ok(_mapper.Map<CampModel>(result));
             }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [Route("searchByDate/{eventDate:datetime}")]
+        [HttpGet]
+        public async Task<IHttpActionResult> SearchByEventDate(DateTime eventDate, bool includeTalks = false)
+        {
+            try
+            {
+                var result = await _repository.GetAllCampsByEventDate(eventDate, includeTalks);
+                return Ok(_mapper.Map<CampModel[]>(result));
+            }
+            catch(Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [Route()]
+        public async Task<IHttpActionResult> Post(CampModel model)
+        {
+            try
+            {
+                return null;
+            }
             catch(Exception ex)
             {
                 return InternalServerError(ex);
