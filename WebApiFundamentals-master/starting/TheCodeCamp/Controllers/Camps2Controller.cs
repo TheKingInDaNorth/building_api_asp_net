@@ -11,13 +11,14 @@ using TheCodeCamp.Models;
 
 namespace TheCodeCamp.Controllers
 {
-    [ApiVersion("2.0")]
+    [ApiVersion("1.0")]
+    [ApiVersion("1.1")]
     [RoutePrefix("api/camps")]
-    public class Camps2Controller : ApiController
+    public class CampsController : ApiController
     {
         private readonly ICampRepository _repository;
         private readonly IMapper _mapper;
-        public Camps2Controller(ICampRepository repository, IMapper mapper)
+        public CampsController(ICampRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
@@ -40,14 +41,31 @@ namespace TheCodeCamp.Controllers
             }
         }
 
-        [Route("{moniker}", Name = "GetCamp20")]
+        [MapToApiVersion("1.0")]
+        [Route("{moniker}", Name = "GetCamp")]
         public async Task<IHttpActionResult> Get(string moniker, bool includeTalks = false)
         {
             try
             {
                 var result = await _repository.GetCampAsync(moniker, includeTalks);
                 if (result == null) return NotFound();
-                return Ok(new { success = true, camp = _mapper.Map<CampModel>(result) });
+                return Ok(_mapper.Map<CampModel>(result));
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [MapToApiVersion("1.1")]
+        [Route("{moniker}", Name = "GetCamp11")]
+        public async Task<IHttpActionResult> Get(string moniker)
+        {
+            try
+            {
+                var result = await _repository.GetCampAsync(moniker, true);
+                if (result == null) return NotFound();
+                return Ok(_mapper.Map<CampModel>(result));
             }
             catch (Exception ex)
             {
